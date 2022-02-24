@@ -38,6 +38,8 @@ const getCacheIdentifier = require('react-dev-utils/getCacheIdentifier');
 // @remove-on-eject-end
 const createEnvironmentHash = require('./webpack/persistentCache/createEnvironmentHash');
 
+const BundleTracker = require('webpack-bundle-tracker');
+
 // Source maps are resource heavy and can cause out of memory issue for large source files.
 const shouldUseSourceMap = process.env.GENERATE_SOURCEMAP !== 'false';
 
@@ -206,6 +208,21 @@ module.exports = function (webpackEnv) {
         ? 'source-map'
         : false
       : isEnvDevelopment && 'cheap-module-source-map',
+    // tigerlab specific settings
+    devServer: {
+      devMiddleware: {
+        index: false
+      },
+      contentBase: path.appBuild,
+      hot: true,
+      publicPath: path.appBuild,
+      port: 3000,
+      proxy: [{
+        context: ['**', '!/static/**', '!/media/**'],
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+      }]
+    },
     // These are the "entry points" to our application.
     // This means they will be the "root" imports that are included in JS bundle.
     entry: paths.appIndexJs,
@@ -216,9 +233,7 @@ module.exports = function (webpackEnv) {
       pathinfo: isEnvDevelopment,
       // There will be one main bundle, and one file per asynchronous chunk.
       // In development, it does not produce real files.
-      filename: isEnvProduction
-        ? 'static/js/[name].[contenthash:8].js'
-        : isEnvDevelopment && 'static/js/bundle.js',
+      filename: 'static/js/[name].[contenthash:8].js',
       // There are also additional JS chunk files if you use code splitting.
       chunkFilename: isEnvProduction
         ? 'static/js/[name].[contenthash:8].chunk.js'
@@ -254,6 +269,14 @@ module.exports = function (webpackEnv) {
       level: 'none',
     },
     optimization: {
+      // tigerlab specific settings
+      splitChunks: {
+        name: 'vendors',
+        minSize: 10
+      },
+      runtimeChunk: {
+        name: 'runtime-main'
+      },
       minimize: isEnvProduction,
       minimizer: [
         // This is only used in production mode
@@ -602,6 +625,12 @@ module.exports = function (webpackEnv) {
       ].filter(Boolean),
     },
     plugins: [
+      new BundleTracker({
+        path: paths.statsPath,
+        filename: `webpack-stats-${process.env.APP_NAME}.json`,
+        relativePath: true,
+        publicPath: `/dashboard/${process.env.APP_NAME}/static/`,
+      }),
       // Generates an `index.html` file with the <script> injected.
       new HtmlWebpackPlugin(
         Object.assign(

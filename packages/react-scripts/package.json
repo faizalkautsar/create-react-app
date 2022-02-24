@@ -1,10 +1,10 @@
 {
-  "name": "react-scripts",
-  "version": "5.0.0",
-  "description": "Configuration and scripts for Create React App.",
+  "name": "@faizalkautsar/react-scripts",
+  "version": "1.0.0",
+  "description": "Configuration and scripts for Create React App @tigerlab by @faizalkautsar",
   "repository": {
     "type": "git",
-    "url": "https://github.com/facebook/create-react-app.git",
+    "url": "https://github.com/faizalkautsar/create-react-app.git",
     "directory": "packages/react-scripts"
   },
   "license": "MIT",
@@ -74,7 +74,8 @@
     "webpack": "^5.64.4",
     "webpack-dev-server": "^4.6.0",
     "webpack-manifest-plugin": "^4.0.2",
-    "workbox-webpack-plugin": "^6.4.1"
+    "workbox-webpack-plugin": "^6.4.1",
+    "webpack-bundle-tracker": "^0.4.3"
   },
   "devDependencies": {
     "react": "^17.0.2",
